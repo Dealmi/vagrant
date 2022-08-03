@@ -1,0 +1,105 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+#This is my file!
+manager_ip = "192.168.100.10"
+
+Vagrant.configure("2") do |config|
+  
+  ################################# first node - leader ################################################
+
+  config.vm.define "node1" do |node1|
+    node1.vm.box = "ubuntu/impish64"
+    node1.vm.hostname = "node1"
+    node1.vm.network "private_network" , ip: "#{manager_ip}"
+    node1.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release net-tools  -y
+      # adding docker repository
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo \
+      "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      # adding hashicorp repository (need vpn tuned on for this step)
+      curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+      sudo apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+      # adding ansible repo
+      sudo add-apt-repository --yes --update ppa:ansible/ansible
+
+      sudo apt-get update
+
+      # installing ansible
+      sudo apt install ansible -y
+      
+      #installing docker and starting swarm
+      sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+      usermod -a -G docker vagrant
+      docker swarm init --advertise-addr #{manager_ip}
+      docker swarm join-token -q worker > /vagrant/join-token
+
+      #installing terraform (vpn is also needed for this step)
+      sudo apt-get install terraform
+      apt-get upgrade -y
+    SHELL
+  end
+
+###################################### second node - worker ##############################################
+
+  config.vm.define "node2" do |node2|
+    node2.vm.box = "ubuntu/impish64"
+    node2.vm.hostname = "node2"
+    node2.vm.network "private_network" , ip: "192.168.100.20"
+    node2.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release net-tools -y
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo \
+      "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      sudo apt-get update
+      sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+      usermod -a -G docker vagrant
+      docker swarm join --token `cat /vagrant/join-token` #{manager_ip} 
+      apt-get upgrade -y
+    SHELL
+  end
+  
+ ###################################### Third node - worker ##############################################  
+
+ config.vm.define "node3" do |node3|
+   node3.vm.box = "ubuntu/impish64"
+   node3.vm.hostname = "node3"
+   node3.vm.network "private_network" , ip: "192.168.100.30"
+   node3.vm.provision "shell", inline: <<-SHELL
+     sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release net-tools -y
+     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+     echo \
+     "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+     $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+     sudo apt-get update
+     sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+     usermod -a -G docker vagrant
+     docker swarm join --token `cat /vagrant/join-token` #{manager_ip} 
+     apt-get upgrade -y
+    SHELL
+  end
+  
+  #Waiting timeout 
+  config.vm.boot_timeout = 99999
+
+  
+  config.vm.provider "virtualbox" do |vb|
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+  vb.memory = "8192"
+  #more custom options here
+  vb.cpus = "1"
+  end
+  
+ 
+end

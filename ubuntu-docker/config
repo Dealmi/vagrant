@@ -1,0 +1,9 @@
+Host 192.168.100.20
+	User vagrant
+	IdentityFile ~/.ssh/node2_priv
+
+Host 192.168.100.30
+	User vagrant
+	IdentityFile ~/.ssh/node3_priv
+
+

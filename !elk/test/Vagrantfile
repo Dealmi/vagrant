@@ -1,0 +1,11 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "Dealmi/ubuntu20_elk_agent"
+  config.vm.hostname = "router"
+  config.vm.box_version = "1.0.1"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "4096"
+    vb.cpus = "3"
+  end
+  config.vm.network "public_network", bridge: "Realtek PCIe GbE Family Controller"
+  config.vm.network "forwarded_port", guest: 5601, host: 5601
+end

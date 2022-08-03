@@ -1,0 +1,7 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "Dealmi/Proxmox_7_1"
+  config.vm.box_version = "1.0.0"
+end

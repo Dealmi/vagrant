@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.bracketPairColorization.enabled": true
+	},
+	
+	"python.analysis.diagnosticSeverityOverrides": {
+			"reportMissingImports": false,
+			"reportImplicitStringConcatenation": "warning"
+	}
+	
+}

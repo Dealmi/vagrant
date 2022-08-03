@@ -1,0 +1,13 @@
+server.host: '0.0.0.0'
+server.port: 5601
+
+elasticsearch.hosts: ['http://127.0.0.1:9200']
+elasticsearch.username: 'kibana_system'
+elasticsearch.requestTimeout: 132000
+elasticsearch.shardTimeout: 120000
+
+xpack.security.audit.enabled: false
+xpack.reporting.enabled: false
+xpack.reporting.roles.enabled: false
+
+xpack.encryptedSavedObjects.encryptionKey: "j2Xv2Q92tPk3euwev4z4FsXQ2PCtZ2eU"

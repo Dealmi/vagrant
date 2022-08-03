@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  
+  config.vm.define "win2019" do |server|
+    server.vm.box = "marcinbojko/w2k19-trial-dc" 
+    server.vm.hostname = "dc1"
+    server.vm.provider "virtualbox" do |vb|
+      vb.memory = "8192"
+      vb.cpus = "3"
+    end
+    server.vm.network "public_network", bridge: "Realtek PCIe GbE Family Controller"
+  end
+
+  config.vm.define "win10" do |client|
+    client.vm.box = "Microsoft/EdgeOnWindows10" 
+    client.vm.provider "virtualbox" do |vb|
+      vb.memory = "8192"
+      vb.cpus = "2"
+    end
+    client.vm.network "public_network", bridge: "Realtek PCIe GbE Family Controller"
+  end
+  
+end

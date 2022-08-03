@@ -1,0 +1,20 @@
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+
+
+network.host: 0.0.0.0
+http.port: 9200
+discovery.type: 'single-node'
+indices.query.bool.max_clause_count: 8192
+search.max_buckets: 250000
+action.destructive_requires_name: 'true'
+reindex.remote.whitelist: '*:*'
+
+
+
+xpack.security.enabled: 'true'
+xpack.security.audit.enabled: 'false'
+xpack.security.authc.api_key.enabled: 'true'
+xpack.ml.enabled: 'false'
+xpack.watcher.enabled: 'false'
+action.auto_create_index: '*'
